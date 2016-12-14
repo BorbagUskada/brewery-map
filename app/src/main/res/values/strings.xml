@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Brewery Map</string>
+    <string name="title_activity_brewery_map">Map</string>
+</resources>
