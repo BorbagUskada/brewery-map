@@ -3,12 +3,12 @@
     android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom"
     sothree:umanoPanelHeight="48dp"
     sothree:umanoShadowHeight="4dp"
+    android:gravity="bottom"
     sothree:umanoFadeColor="@android:color/transparent"
     sothree:umanoOverlay="false"
-    sothree:umanoInitialState="expanded">
+    sothree:umanoInitialState="hidden">
 
     <!-- // Main content of activity // -->
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -24,22 +24,15 @@
     <!--android:text="Testgg"/>-->
 
     <!-- // Sliding up fragment // -->
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/ll_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_below="@+id/toolbar"
         android:gravity="bottom"
-        android:background="@android:color/holo_red_dark">
-
-        <TextView
-            android:id="@+id/tv_bottom_fragment_brew_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="14dp" />
-
-    </RelativeLayout>
+        android:background="@android:color/holo_red_dark"
+        android:orientation="vertical">
+        <include
+            layout="@layout/fragment_slidinguppanel"/>
+    </LinearLayout>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

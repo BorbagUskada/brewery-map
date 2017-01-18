@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainDark">
+
+    <TextView
+        android:id="@+id/tv_bottom_fragment_brew_name"
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:paddingLeft="35dp"
+        android:gravity="center_vertical"
+        android:background="@color/mainYellow"
+        style="@style/Base.TextAppearance.AppCompat.Title" />
+
+    <TextView
+        android:id="@+id/tv_brew_beers_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_bottom_fragment_brew_name"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:text="Nombre de bières : "
+        android:textColor="#FFF"/>
+
+    <TextView
+        android:id="@+id/tv_brew_beers_nb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+       android:layout_alignEnd="@id/tv_brew_beers_label"
+        android:layout_alignRight="@id/tv_brew_beers_label"
+        android:layout_alignTop="@id/tv_brew_beers_label"
+        android:layout_marginRight="-15dp"
+        android:layout_marginEnd="-15dp"
+        android:textColor="#FFF"
+        android:text="5"/>
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:background="@color/mainYellow"
+        android:text="Accès à la fiche"
+        android:layout_below="@+id/tv_bottom_fragment_brew_name"
+        android:layout_marginTop="16dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:id="@+id/button3" />
+
+
+
+</RelativeLayout>

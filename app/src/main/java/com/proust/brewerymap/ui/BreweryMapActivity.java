@@ -4,7 +4,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.RelativeLayout;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
     private SlidingUpPanelLayout mLayout;
 
     private TextView mTextViewBottomFragmentBrewName;
+    private TextView mTextViewBottomFragmentBrewNbBeers;
 
     private List<Brewery> mBreweries;
 
@@ -55,9 +57,11 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
         mapFragment.getMapAsync(this);
 
         mLayout = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         mLayout.setEnabled(false);
 
         mTextViewBottomFragmentBrewName = (TextView)findViewById(R.id.tv_bottom_fragment_brew_name);
+        mTextViewBottomFragmentBrewNbBeers = (TextView)findViewById(R.id.tv_brew_beers_nb);
 
         CustomPreferences.getInstance(getApplicationContext()).storeBreweries(generateBreweries());
 
@@ -70,7 +74,7 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mClusterManager = new ClusterManager<BrewClusterItem>(this, googleMap);
+        mClusterManager = new ClusterManager<>(this, googleMap);
 //        mClusterManager.setRenderer(new ClusterRenderer(this, googleMap, mClusterManager));
         mClusterManager.setOnClusterItemClickListener(this);
 
@@ -101,19 +105,25 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
     private ArrayList<Brewery> generateBreweries() {
         ArrayList<Brewery> brews = new ArrayList<>();
         ArrayList<Beer> beersSetOne = new ArrayList<>();
+        ArrayList<Beer> beersSetTwo = new ArrayList<>();
         Beer tmpBeer = new Beer("Pelforth Brune");
         beersSetOne.add(tmpBeer);
         tmpBeer = new Beer("Pelforth Blonde");
         beersSetOne.add(tmpBeer);
+        tmpBeer = new Beer("Spanish beer");
+        beersSetTwo.add(tmpBeer);
+
 
         brews.add(new Brewery("Pelforth Brew", 1925, new LatLng(46.51, -0.35789), beersSetOne));
         brews.add(new Brewery("Pelforth Brew 2", 1925, new LatLng(46.512, -0.35719), beersSetOne));
         brews.add(new Brewery("Kro Brew", 1942, new LatLng(46.47, 0.0546), new ArrayList<Beer>()));
-        brews.add(new Brewery("Spanish brew", 1942, new LatLng(42, -1), new ArrayList<Beer>()));
+        brews.add(new Brewery("Spanish brew", 1942, new LatLng(42, -1), beersSetTwo));
         brews.add(new Brewery("Kro Brew 2", 1942, new LatLng(46.41, 0.054), new ArrayList<Beer>()));
         brews.add(new Brewery("Kro Brew 3", 1942, new LatLng(46.48, 0.053), new ArrayList<Beer>()));
         return brews;
     }
+
+
 
     @Override
     public boolean onMarkerClick(Marker marker) {
@@ -127,7 +137,19 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
         mLayout.setEnabled(true);
         mLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         mTextViewBottomFragmentBrewName.setText(brewClusterItem.mBrew.getName());
+        mTextViewBottomFragmentBrewNbBeers.setText(""+brewClusterItem.mBrew.getBeers().size());
         return false;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if(ev.getAction() == MotionEvent.ACTION_DOWN && mLayout.isEnabled()) {
+            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            mLayout.setPanelHeight(0);
+            mLayout.setEnabled(false);
+            Log.i("BiigLogPanel", " Panel state : " + mLayout.getPanelState());
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     private void showFragment(Fragment newFragment) {
