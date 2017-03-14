@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="brew_details_activity_side_margin">16dp</dimen>
+    <dimen name="brew_details_activity_vertical_space">16dp</dimen>
+</resources>

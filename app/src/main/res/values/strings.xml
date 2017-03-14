@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Brewery Map</string>
+
+
     <string name="title_activity_brewery_map">Map</string>
+    <string name="title_activity_brewery_details">Details</string>
+
+    <string name="details_label_nb_beers">Nombres de bières : </string>
+    <string name="details_label_foundingDate">Année de fondation : </string>
+    <string name="details_label_beers">Détails des bières : </string>
 </resources>

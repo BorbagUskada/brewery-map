@@ -8,9 +8,12 @@
     android:gravity="bottom"
     sothree:umanoFadeColor="@android:color/transparent"
     sothree:umanoOverlay="false"
-    sothree:umanoInitialState="hidden">
+    sothree:umanoInitialState="expanded">
 
     <!-- // Main content of activity // -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/map"
@@ -18,10 +21,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.proust.brewerymap.ui.BreweryMapActivity" />
-<!--<TextView-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:text="Testgg"/>-->
+
+        <View
+            android:id="@+id/v_map_disabler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="@color/lightShadow"/>
+    </RelativeLayout>
 
     <!-- // Sliding up fragment // -->
     <LinearLayout
@@ -30,7 +37,6 @@
         android:layout_height="150dp"
         android:layout_below="@+id/toolbar"
         android:gravity="bottom"
-        android:background="@android:color/holo_red_dark"
         android:orientation="vertical">
         <include
             layout="@layout/fragment_slidinguppanel"/>

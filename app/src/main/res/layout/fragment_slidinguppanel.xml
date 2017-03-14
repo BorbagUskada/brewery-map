@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_fragment_slidinguppanel"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="150dp"
     android:background="@color/mainDark">
 
     <TextView
         android:id="@+id/tv_bottom_fragment_brew_name"
         android:text="TextView"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="48dp"
         android:paddingLeft="35dp"
         android:gravity="center_vertical"
         android:background="@color/mainYellow"
@@ -23,7 +24,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:text="Nombre de bières : "
+        android:text="@string/details_label_nb_beers"
         android:textColor="#FFF"/>
 
     <TextView
@@ -39,6 +40,7 @@
         android:text="5"/>
 
     <Button
+        android:id="@+id/btn_go_to_brew_details"
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:background="@color/mainYellow"
@@ -47,8 +49,7 @@
         android:layout_marginTop="16dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp"
-        android:id="@+id/button3" />
+        android:layout_marginRight="16dp" />
 
 
 

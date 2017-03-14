@@ -1,11 +1,16 @@
 package com.proust.brewerymap.ui;
 
+import android.annotation.TargetApi;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +26,7 @@ import com.proust.brewerymap.core.beans.Beer;
 import com.proust.brewerymap.core.beans.Brewery;
 import com.proust.brewerymap.core.tools.CustomPreferences;
 import com.proust.brewerymap.ui.adapters.map.BrewClusterItem;
+import com.proust.brewerymap.ui.adapters.map.ClusterRenderer;
 import com.proust.brewerymap.ui.fragments.SlidingUpFragment;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -35,11 +41,17 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
 
     private GoogleMap mMap;
 
+    private SupportMapFragment mMapFragment;
+
     private SlidingUpFragment mBottomBreweryFragment;
     private SlidingUpPanelLayout mLayout;
+    private View mViewMapDisabler;
+
+    private Brewery mCurrentBrew;
 
     private TextView mTextViewBottomFragmentBrewName;
     private TextView mTextViewBottomFragmentBrewNbBeers;
+    private Button mButtonGoToDetails;
 
     private List<Brewery> mBreweries;
 
@@ -52,21 +64,38 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_brewery_map);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        CustomPreferences.getInstance(getApplicationContext()).storeBreweries(generateBreweries());
+
+        mMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mMapFragment.getMapAsync(this);
 
         mLayout = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
-        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        mLayout.setEnabled(false);
+        mLayout.setEnabled(true);
+        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+
+        mViewMapDisabler = findViewById(R.id.v_map_disabler);
+        mViewMapDisabler.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                enableMap();
+                return true;
+            }
+        });
 
         mTextViewBottomFragmentBrewName = (TextView)findViewById(R.id.tv_bottom_fragment_brew_name);
         mTextViewBottomFragmentBrewNbBeers = (TextView)findViewById(R.id.tv_brew_beers_nb);
+        mButtonGoToDetails = (Button)findViewById(R.id.btn_go_to_brew_details);
+        mButtonGoToDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToBrewDetailsActivity(mCurrentBrew);
+            }
+        });
 
-        CustomPreferences.getInstance(getApplicationContext()).storeBreweries(generateBreweries());
-
-        mBreweries = CustomPreferences.getInstance(getApplicationContext()).getAllBreweries();
-
+        /* Commented as I don't know why LatLng is null when retrieve from SharedPreferences */
+        // mBreweries = CustomPreferences.getInstance(getApplicationContext()).getAllBreweries();
+        Log.d("BiigLogBrewCreate", "LatLng : " + mBreweries.get(0).getLocation());
     }
 
 
@@ -75,16 +104,16 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
         mMap = googleMap;
 
         mClusterManager = new ClusterManager<>(this, googleMap);
-//        mClusterManager.setRenderer(new ClusterRenderer(this, googleMap, mClusterManager));
+        mClusterManager.setRenderer(new ClusterRenderer(this, googleMap, mClusterManager));
         mClusterManager.setOnClusterItemClickListener(this);
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(mBreweries.get(0).getLocation()));
 
         mMap.setOnMarkerClickListener(mClusterManager);
 
         mMap.setOnCameraIdleListener(mClusterManager);
-
+        Log.d("BiigLog", "Breweries : " + mBreweries.get(0).getLocation());
         placeNewBreweries(mBreweries);
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(mBreweries.get(0).getLocation()));
     }
 
     /**
@@ -120,6 +149,9 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
         brews.add(new Brewery("Spanish brew", 1942, new LatLng(42, -1), beersSetTwo));
         brews.add(new Brewery("Kro Brew 2", 1942, new LatLng(46.41, 0.054), new ArrayList<Beer>()));
         brews.add(new Brewery("Kro Brew 3", 1942, new LatLng(46.48, 0.053), new ArrayList<Beer>()));
+
+        mBreweries = brews;
+        Log.d("BiigLogBrew", "LatLng : " + brews.get(0).getLocation());
         return brews;
     }
 
@@ -133,23 +165,16 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
 
     @Override
     public boolean onClusterItemClick(BrewClusterItem brewClusterItem) {
-//        Toast.makeText(this, "Brewery : " + brewClusterItem.mBrew.getName(), Toast.LENGTH_SHORT).show();
-        mLayout.setEnabled(true);
-        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+
         mTextViewBottomFragmentBrewName.setText(brewClusterItem.mBrew.getName());
         mTextViewBottomFragmentBrewNbBeers.setText(""+brewClusterItem.mBrew.getBeers().size());
+        mCurrentBrew = brewClusterItem.mBrew;
+        Log.i("BiigLogPanel", " Panel state : " + mLayout.getPanelState());
+        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+        mLayout.setEnabled(true);
+        disableMap();
+//        mLayout.setPanelHeight(150);
         return false;
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if(ev.getAction() == MotionEvent.ACTION_DOWN && mLayout.isEnabled()) {
-            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-            mLayout.setPanelHeight(0);
-            mLayout.setEnabled(false);
-            Log.i("BiigLogPanel", " Panel state : " + mLayout.getPanelState());
-        }
-        return super.dispatchTouchEvent(ev);
     }
 
     private void showFragment(Fragment newFragment) {
@@ -160,5 +185,22 @@ public class BreweryMapActivity extends FragmentActivity implements OnMapReadyCa
 
     public interface OnBrewMarkerSelectedListener {
         void onBrewMarkerSelected();
+    }
+
+    private void disableMap() {
+        mViewMapDisabler.setVisibility(View.VISIBLE);
+    }
+    private void enableMap() {
+        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        mViewMapDisabler.setVisibility(View.GONE);
+    }
+
+
+    private void goToBrewDetailsActivity(Brewery brew) {
+
+        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        Intent brewIntent = new Intent(this, BreweryDetailsActivity.class);
+        brewIntent.putExtra(Brewery.BREWERY, brew);
+        startActivity(brewIntent);
     }
 }

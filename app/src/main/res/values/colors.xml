@@ -6,4 +6,5 @@
 
     <color name="mainYellow">#DB0</color>
     <color name="mainDark">#333</color>
+    <color name="lightShadow">#555A</color>
 </resources>
